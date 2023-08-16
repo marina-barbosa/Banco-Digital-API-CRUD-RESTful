@@ -31,7 +31,18 @@ let dados = {
             }
         }
     ],
-    depositos: [],
+    depositos: [
+        {
+            "data": "2021-08-18 20:46:03",
+            "numero_conta": 1,
+            "valor": 10000
+        },
+        {
+            "data": "2021-08-18 20:46:06",
+            "numero_conta": 1,
+            "valor": 10000
+        }
+    ],
     saques: [],
     transferencias: []
 }

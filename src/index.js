@@ -17,6 +17,6 @@ app.listen(3000, () => {
 // Depósitar em uma conta bancária OK
 // Sacar de uma conta bancária OK
 // Transferir valores entre contas bancárias OK
-// Consultar saldo da conta bancária
-// Emitir extrato bancário
+// Consultar saldo da conta bancária OK
+// Emitir extrato bancário 
 

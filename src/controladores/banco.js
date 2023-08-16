@@ -167,6 +167,45 @@ const sacar = (req, res) => {
     return res.json();
 };
 const transferir = (req, res) => {
+    const { valor, numero_conta_origem, numero_conta_destino, senha } = req.body;
+
+
+    if (!valor || !numero_conta_origem || !numero_conta_destino || !senha) {
+        return res.status(400).json({ "mensagem": "Os números das contas, o valor da transferencia e a senha são obrigatórios!" });
+    }
+
+    if (isNaN(numero_conta_origem) || isNaN(numero_conta_destino)) {
+        return res.status(400).json({ mensagem: 'Número de conta inválido.' });
+    }
+
+    const contaOrigem = contas.find((conta) => {
+        return conta.numero === numero_conta_origem;
+    });
+    const contaDestino = contas.find((conta) => {
+        return conta.numero === numero_conta_destino;
+    });
+
+    if (!contaOrigem || !contaDestino) {
+        return res.status(404).json({ mensagem: 'Conta não encontrada.' });
+    };
+
+    if (senha !== contaOrigem.usuario.senha) {
+        return res.status(400).json({ mensagem: 'Senha inválida.' });
+    }
+
+    if (valor > contaOrigem.saldo || valor <= 0) {
+        return res.status(400).json({ mensagem: 'Valor inválido' });
+    }
+
+    contaOrigem.saldo -= valor
+    contaDestino.saldo += valor
+
+    transferencias.push({
+        "data": new Date(),
+        "numero_conta_origem": numero_conta_origem,
+        "numero_conta_destino": numero_conta_destino,
+        "valor": valor
+    });
 
     return res.send('ok');
 };
