@@ -8,42 +8,10 @@ const listarContas = (req, res) => {
 const criarConta = (req, res) => {
     const { nome, cpf, data_nascimento, telefone, email, senha } = req.body;
 
+    const erro = verificaDados(nome, cpf, data_nascimento, telefone, email, senha)
 
-
-    if (!nome) {
-        return res.status(400).json({ "mensagem": "O nome deve ser informado." });
-    }
-
-    if (!cpf) {
-        return res.status(400).json({ "mensagem": "O CPF deve ser informado." });
-    }
-
-    if (!data_nascimento) {
-        return res.status(400).json({ "mensagem": "A data de nascimento deve ser informada." });
-    }
-
-    if (!telefone) {
-        return res.status(400).json({ "mensagem": "O telefone deve ser informado." });
-    }
-
-    if (!email) {
-        return res.status(400).json({ "mensagem": "O email deve ser informado." });
-    }
-
-    if (!senha) {
-        return res.status(400).json({ "mensagem": "O senha deve ser informada." });
-    }
-
-    if (contas.find(conta => conta.usuario.nome === nome)) {
-        return res.status(400).json({ "mensagem": "O nome informado já existe cadastrado!" });
-    }
-
-    if (contas.find(conta => conta.usuario.cpf === cpf)) {
-        return res.status(400).json({ "mensagem": "O CPF informado já existe cadastrado!" });
-    }
-
-    if (contas.find(conta => conta.usuario.email === email)) {
-        return res.status(400).json({ "mensagem": "O email informado já existe cadastrado!" });
+    if (erro !== '0') {
+        return res.status(400).json(erro);
     }
 
     numeroContas++;
@@ -66,7 +34,72 @@ const criarConta = (req, res) => {
     return res.status(201).send();
 }
 
+const atualizarUsuario = (req, res) => {
+    const { numeroConta } = req.params;
+    const { nome, cpf, data_nascimento, telefone, email, senha } = req.body;
+
+    if (isNaN(numeroConta)) {
+        return res.status(400).json({ mensagem: 'Número de conta inválido.' });
+    }
+
+    const conta = contas.find((conta) => {
+        return conta.numero === Number(numeroConta);
+    });
+
+    if (!conta) {
+        return res.status(404).json({ mensagem: 'Conta não encontrada.' });
+    };
+
+    const erro = verificaDados(nome, cpf, data_nascimento, telefone, email, senha)
+
+    if (erro !== '0') {
+        return res.status(400).json(erro);
+    }
+
+    conta.usuario = {
+        nome,
+        cpf,
+        data_nascimento,
+        telefone,
+        email,
+        senha
+    }
+
+    return res.status(201).json();
+}
+
+const excluirConta = (req, res) => {
+
+}
+
+function verificaDados(nome, cpf, data_nascimento, telefone, email, senha) {
+    if (!nome || nome === '') {
+        erro = { "mensagem": "O nome deve ser informado." };
+    } else if (!cpf || cpf === '') {
+        erro = { "mensagem": "O CPF deve ser informado." };
+    } else if (!data_nascimento || data_nascimento === '') {
+        erro = { "mensagem": "A data de nascimento deve ser informada." };
+    } else if (!telefone || telefone === '') {
+        erro = { "mensagem": "O telefone deve ser informado." };
+    } else if (!email || email === '') {
+        erro = { "mensagem": "O email deve ser informado." };
+    } else if (!senha || senha === '') {
+        erro = { "mensagem": "O senha deve ser informada." };
+    } else if (contas.find(conta => conta.usuario.nome === nome)) {
+        erro = { "mensagem": "O nome informado já existe cadastrado!" };
+    } else if (contas.find(conta => conta.usuario.cpf === cpf)) {
+        erro = { "mensagem": "O CPF informado já existe cadastrado!" };
+    } else if (contas.find(conta => conta.usuario.email === email)) {
+        erro = { "mensagem": "O email informado já existe cadastrado!" };
+    } else {
+        erro = '0';
+    }
+    return erro;
+}
+
 module.exports = {
     listarContas,
     criarConta,
+    atualizarUsuario,
+    excluirConta,
 }

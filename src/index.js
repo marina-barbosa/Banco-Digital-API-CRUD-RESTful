@@ -10,9 +10,9 @@ app.listen(3000, () => {
 });
 
 
-// Criar conta bancária
-// Listar contas bancárias
-// Atualizar os dados do usuário da conta bancária
+// Criar conta bancária OK
+// Listar contas bancárias OK
+// Atualizar os dados do usuário da conta bancária OK
 // Excluir uma conta bancária
 // Depósitar em uma conta bancária
 // Sacar de uma conta bancária
