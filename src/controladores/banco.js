@@ -94,6 +94,57 @@ const excluirConta = (req, res) => {
     return res.status(204).json();
 }
 
+const depositar = (req, res) => {
+    const { valor } = req.body;
+    const numeroConta = req.body.numero_conta;
+
+    if (!numeroConta || !valor) {
+        return res.status(400).json({ "mensagem": "O número da conta e o valor são obrigatórios!" });
+    }
+
+    if (isNaN(numeroConta)) {
+        return res.status(400).json({ mensagem: 'Número de conta inválido.' });
+    }
+
+    const conta = contas.find((conta) => {
+        return conta.numero === numeroConta;
+    });
+
+    if (!conta) {
+        return res.status(404).json({ mensagem: 'Conta não encontrada.' });
+    };
+
+    if (valor <= 0) {
+        return res.status(400).json({ mensagem: 'Não é permitido depósitos com valores negativos ou zerados' });
+    }
+
+    conta.saldo += valor
+
+    depositos.push({
+        "data": new Date(),
+        "numero_conta": numeroConta,
+        valor
+    });
+
+    return res.json();
+};
+const sacar = (req, res) => {
+
+    return res.send('ok');
+};
+const transferir = (req, res) => {
+
+    return res.send('ok');
+};
+const saldo = (req, res) => {
+
+    return res.send('ok');
+};
+const extrato = (req, res) => {
+
+    return res.send('ok');
+};
+
 // function verificaNumeroConta(numeroConta) { }
 
 function verificaDados(nome, cpf, data_nascimento, telefone, email, senha) {
@@ -126,4 +177,9 @@ module.exports = {
     criarConta,
     atualizarUsuario,
     excluirConta,
+    depositar,
+    sacar,
+    transferir,
+    saldo,
+    extrato
 }
