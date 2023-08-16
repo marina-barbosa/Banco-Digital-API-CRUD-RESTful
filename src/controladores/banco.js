@@ -129,8 +129,43 @@ const depositar = (req, res) => {
     return res.json();
 };
 const sacar = (req, res) => {
+    const { valor, senha } = req.body;
+    const numeroConta = req.body.numero_conta;
 
-    return res.send('ok');
+    if (!numeroConta || !valor || !senha) {
+        return res.status(400).json({ "mensagem": "O número da conta, o valor do saque e a senha são obrigatórios!" });
+    }
+
+    if (isNaN(numeroConta)) {
+        return res.status(400).json({ mensagem: 'Número de conta inválido.' });
+    }
+
+    const conta = contas.find((conta) => {
+        return conta.numero === numeroConta;
+    });
+
+    if (!conta) {
+        return res.status(404).json({ mensagem: 'Conta não encontrada.' });
+    };
+
+    if (senha !== conta.usuario.senha) {
+        return res.status(400).json({ mensagem: 'Senha inválida.' });
+    }
+    console.log(valor)
+
+    if (valor > conta.saldo || valor <= 0) {
+        return res.status(400).json({ mensagem: 'Valor inválido' });
+    }
+
+    conta.saldo -= valor
+
+    saques.push({
+        "data": new Date(),
+        "numero_conta": numeroConta,
+        valor
+    });
+
+    return res.json();
 };
 const transferir = (req, res) => {
 
