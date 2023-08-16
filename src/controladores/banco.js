@@ -69,7 +69,7 @@ const atualizarUsuario = (req, res) => {
 }
 
 const excluirConta = (req, res) => {
-
+    const { numeroConta } = req.params;
 }
 
 function verificaDados(nome, cpf, data_nascimento, telefone, email, senha) {
