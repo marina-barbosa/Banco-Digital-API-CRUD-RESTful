@@ -151,7 +151,6 @@ const sacar = (req, res) => {
     if (senha !== conta.usuario.senha) {
         return res.status(400).json({ mensagem: 'Senha inválida.' });
     }
-    console.log(valor)
 
     if (valor > conta.saldo || valor <= 0) {
         return res.status(400).json({ mensagem: 'Valor inválido' });
@@ -172,8 +171,29 @@ const transferir = (req, res) => {
     return res.send('ok');
 };
 const saldo = (req, res) => {
+    const { senha, numero_conta } = req.query;
 
-    return res.send('ok');
+    if (!numero_conta || !senha) {
+        return res.status(400).json({ "mensagem": "O número da conta e senha são obrigatórios!" });
+    }
+
+    if (isNaN(numero_conta)) {
+        return res.status(400).json({ mensagem: 'Número de conta inválido.' });
+    }
+
+    const conta = contas.find((conta) => {
+        return conta.numero === Number(numero_conta);
+    });
+
+    if (!conta) {
+        return res.status(404).json({ mensagem: 'Conta não encontrada.' });
+    };
+
+    if (senha !== conta.usuario.senha) {
+        return res.status(400).json({ mensagem: 'Senha inválida.' });
+    }
+
+    return res.json(conta.saldo);
 };
 const extrato = (req, res) => {
 

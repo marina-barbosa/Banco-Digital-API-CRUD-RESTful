@@ -20,7 +20,7 @@ rotas.delete('/contas/:numeroConta', excluirConta);
 rotas.post('/transacoes/depositar', depositar);
 rotas.post('/transacoes/sacar', sacar);
 rotas.post('/transacoes/transferir', transferir);
-rotas.get('/contas/saldo?numero_conta=123&senha=123', saldo);
-rotas.get('/contas/extrato?numero_conta=123&senha=123', extrato);
+rotas.get('/contas/saldo', saldo);
+rotas.get('/contas/extrato', extrato);
 
 module.exports = rotas;
