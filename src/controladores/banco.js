@@ -209,6 +209,7 @@ const transferir = (req, res) => {
 
     return res.json();
 };
+
 const saldo = (req, res) => {
     const { senha, numero_conta } = req.query;
 
@@ -234,6 +235,7 @@ const saldo = (req, res) => {
 
     return res.json(conta.saldo);
 };
+
 const extrato = (req, res) => {
     const { senha, numero_conta } = req.query;
 
@@ -288,7 +290,22 @@ const extrato = (req, res) => {
     return res.json(extrato);
 };
 
-// function verificaNumeroConta(numeroConta) { }
+function verificaConta(numeroConta, res) {
+    if (isNaN(Number(numeroConta))) {
+        return res.status(400).json({ mensagem: 'Número de conta inválido.' });
+    };
+
+    const conta = contas.find((conta) => {
+        return conta.numero === numeroConta;
+    });
+
+    if (!conta) {
+        return res.status(404).json({ mensagem: 'Conta não encontrada.' });
+    };
+
+    return conta;
+}
+
 
 function verificaDados(nome, cpf, data_nascimento, telefone, email, senha) {
     if (!nome || nome.trim() === '') {

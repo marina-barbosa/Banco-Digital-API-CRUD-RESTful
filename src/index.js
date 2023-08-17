@@ -9,4 +9,12 @@ app.listen(3000, () => {
     console.log('Server ON.')
 });
 
+// representar em R$
+// refatorar funções repetidas?
+// padronizar td
+// usar readFile e writeFile
+// consertar transferencias
+
+
+
 
