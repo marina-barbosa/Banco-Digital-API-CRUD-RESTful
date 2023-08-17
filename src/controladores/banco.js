@@ -1,4 +1,4 @@
-let { banco, contas, depositos, saques, transferencias } = require('../bancodedados.js');
+let { contas, depositos, saques, transferencias } = require('../bancodedados.js');
 let numeroContas = 2;
 
 const listarContas = (req, res) => {
@@ -207,7 +207,7 @@ const transferir = (req, res) => {
         "valor": valor
     });
 
-    return res.send('ok');
+    return res.json();
 };
 const saldo = (req, res) => {
     const { senha, numero_conta } = req.query;
@@ -235,8 +235,57 @@ const saldo = (req, res) => {
     return res.json(conta.saldo);
 };
 const extrato = (req, res) => {
+    const { senha, numero_conta } = req.query;
 
-    return res.send('ok');
+    if (!numero_conta || !senha) {
+        return res.status(400).json({ "mensagem": "O número da conta e senha são obrigatórios!" });
+    }
+
+    if (isNaN(numero_conta)) {
+        return res.status(400).json({ mensagem: 'Número de conta inválido.' });
+    }
+
+    const conta = contas.find((conta) => {
+        return conta.numero === Number(numero_conta);
+    });
+
+    if (!conta) {
+        return res.status(404).json({ mensagem: 'Conta não encontrada.' });
+    };
+
+    if (senha !== conta.usuario.senha) {
+        return res.status(400).json({ mensagem: 'Senha inválida.' });
+    }
+
+    let extrato = {
+        depositos: [],
+        saques: [],
+        transferenciasEnviadas: [],
+        transferenciasRecebidas: []
+    }
+
+    for (let item of transferencias) {
+        if (item.numero_conta_origem === 1) {
+            extrato.transferenciasEnviadas.push(item);
+        }
+        if (item.numero_conta_destino === 1) {
+            extrato.transferenciasRecebidas.push(item);
+        }
+    }
+
+    for (let item of depositos) {
+        if (item.numero_conta === 1) {
+            extrato.depositos.push(item);
+        }
+    }
+
+    for (let item of saques) {
+        if (item.numero_conta === 1) {
+            extrato.saques.push(item);
+        }
+    }
+
+    return res.json(extrato);
 };
 
 // function verificaNumeroConta(numeroConta) { }
