@@ -10,8 +10,8 @@ app.listen(3000, () => {
 });
 
 // representar em R$
-// refatorar funções repetidas?
-// padronizar td
+// refatorar funções
+// padronizar td msg
 // usar readFile e writeFile
 // consertar transferencias
 
