@@ -9,13 +9,12 @@ app.listen(3000, () => {
     console.log('Server ON.')
 });
 
-// representar em R$
-// refatorar funções ok
+
 // tentar criar verifica campos
-// padronizar td msg
-// usar readFile e writeFile
+// refatorar mensagem de erro
 // consertar transferencias
-// formatar data
+
+
 
 
 

@@ -76,7 +76,7 @@ const excluirConta = (req, res) => {
 }
 
 const depositar = (req, res) => {
-    const { valor } = req.body;
+    const valor = Number(req.body.valor);
     const numero_conta = req.body.numero_conta;
 
     if (!numero_conta || !valor) {
@@ -85,8 +85,8 @@ const depositar = (req, res) => {
 
     const conta = verificaConta(numero_conta, res);
 
-    if (valor <= 0) {
-        return res.status(400).json({ 'mensagem': 'Não é permitido depósitos com valores negativos ou zerados' });
+    if (valor <= 0 || isNaN(valor)) {
+        return res.status(400).json({ 'mensagem': 'Valor inválido' });
     }
 
     conta.saldo += valor
@@ -100,7 +100,8 @@ const depositar = (req, res) => {
     return res.json();
 };
 const sacar = (req, res) => {
-    const { valor, senha } = req.body;
+    const { senha } = req.body;
+    const valor = Number(req.body.valor);
     const numero_conta = req.body.numero_conta;
 
     if (!numero_conta || !valor || !senha) {
@@ -113,7 +114,7 @@ const sacar = (req, res) => {
         return res.status(400).json({ 'mensagem': 'Senha inválida.' });
     }
 
-    if (valor > conta.saldo || valor <= 0) {
+    if (valor > conta.saldo || valor <= 0 || isNaN(valor)) {
         return res.status(400).json({ 'mensagem': 'Valor inválido' });
     }
 
@@ -129,9 +130,10 @@ const sacar = (req, res) => {
 };
 
 const transferir = (req, res) => {
-    const { valor, numero_conta_origem, numero_conta_destino, senha } = req.body;
+    const { numero_conta_origem, numero_conta_destino, senha } = req.body;
+    const valor = Number(req.body.valor);
 
-    if (!valor || !numero_conta_origem || !numero_conta_destino || !senha) {
+    if (!numero_conta_origem || !numero_conta_destino || !senha) {
         return res.status(400).json({ 'mensagem': 'Os números das contas, o valor da transferencia e a senha são obrigatórios!' });
     }
 
@@ -142,7 +144,7 @@ const transferir = (req, res) => {
         return res.status(400).json({ 'mensagem': 'Senha inválida.' });
     }
 
-    if (valor > contaOrigem.saldo || valor <= 0) {
+    if (valor > contaOrigem.saldo || valor <= 0 || isNaN(valor)) {
         return res.status(400).json({ 'mensagem': 'Valor inválido' });
     }
 
@@ -208,47 +210,6 @@ const extrato = (req, res) => {
     return res.json(extrato);
 };
 
-// function verificaConta(numero_conta, res) {
-//     if (isNaN(numero_conta)) {
-//         return res.status(400).json({ 'mensagem': 'Número de conta inválido.' });
-//     };
-
-//     const conta = contas.find((conta) => {
-//         return conta.numero === numero_conta;
-//     });
-
-//     if (!conta) {
-//         return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
-//     };
-
-//     return conta;
-// }
-
-
-// function verificaDados(nome, cpf, data_nascimento, telefone, email, senha, res) {
-//     if (!nome || nome.trim() === '') {
-//         erro = { 'mensagem': 'O nome deve ser informado.' };
-//     } else if (!cpf || cpf.trim() === '') {
-//         erro = { 'mensagem': 'O CPF deve ser informado.' };
-//     } else if (!data_nascimento || data_nascimento.trim() === '') {
-//         erro = { 'mensagem': 'A data de nascimento deve ser informada.' };
-//     } else if (!telefone || telefone.trim() === '') {
-//         erro = { 'mensagem': 'O telefone deve ser informado.' };
-//     } else if (!email || email.trim() === '') {
-//         erro = { 'mensagem': 'O email deve ser informado.' };
-//     } else if (!senha || senha.trim() === '') {
-//         erro = { 'mensagem': 'O senha deve ser informada.' };
-//     } else if (contas.find(conta => conta.usuario.nome === nome)) {
-//         erro = { 'mensagem': 'O nome informado já existe cadastrado!' };
-//     } else if (contas.find(conta => conta.usuario.cpf === cpf)) {
-//         erro = { 'mensagem': 'O CPF informado já existe cadastrado!' };
-//     } else if (contas.find(conta => conta.usuario.email === email)) {
-//         erro = { 'mensagem': 'O email informado já existe cadastrado!' };
-//     } else {
-//         erro = '0';
-//     }
-//     return erro;
-// }
 
 module.exports = {
     listarContas,
