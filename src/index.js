@@ -10,7 +10,8 @@ app.listen(3000, () => {
 });
 
 // representar em R$
-// refatorar funções
+// refatorar funções ok
+// tentar criar verifica campos
 // padronizar td msg
 // usar readFile e writeFile
 // consertar transferencias
