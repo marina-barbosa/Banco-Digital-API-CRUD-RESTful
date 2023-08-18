@@ -14,6 +14,7 @@ app.listen(3000, () => {
 // padronizar td msg
 // usar readFile e writeFile
 // consertar transferencias
+// formatar data
 
 
 

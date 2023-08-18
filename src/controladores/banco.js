@@ -64,7 +64,7 @@ const excluirConta = (req, res) => {
     const conta = verificaConta(numero_conta, res);
 
     if (conta.saldo !== 0) {
-        return res.status(403).json({ mensagem: 'A conta só pode ser removida se o saldo for zero!' });
+        return res.status(403).json({ 'mensagem': 'A conta só pode ser removida se o saldo for zero!' });
     }
 
     contas = contas.filter((conta) => {
@@ -79,13 +79,13 @@ const depositar = (req, res) => {
     const numero_conta = req.body.numero_conta;
 
     if (!numero_conta || !valor) {
-        return res.status(400).json({ "mensagem": "O número da conta e o valor são obrigatórios!" });
+        return res.status(400).json({ 'mensagem': 'O número da conta e o valor são obrigatórios!' });
     }
 
     const conta = verificaConta(numero_conta, res);
 
     if (valor <= 0) {
-        return res.status(400).json({ mensagem: 'Não é permitido depósitos com valores negativos ou zerados' });
+        return res.status(400).json({ 'mensagem': 'Não é permitido depósitos com valores negativos ou zerados' });
     }
 
     conta.saldo += valor
@@ -103,17 +103,17 @@ const sacar = (req, res) => {
     const numero_conta = req.body.numero_conta;
 
     if (!numero_conta || !valor || !senha) {
-        return res.status(400).json({ "mensagem": "O número da conta, o valor do saque e a senha são obrigatórios!" });
+        return res.status(400).json({ 'mensagem': 'O número da conta, o valor do saque e a senha são obrigatórios!' });
     }
 
     const conta = verificaConta(numero_conta, res);
 
     if (senha !== conta.usuario.senha) {
-        return res.status(400).json({ mensagem: 'Senha inválida.' });
+        return res.status(400).json({ 'mensagem': 'Senha inválida.' });
     }
 
     if (valor > conta.saldo || valor <= 0) {
-        return res.status(400).json({ mensagem: 'Valor inválido' });
+        return res.status(400).json({ 'mensagem': 'Valor inválido' });
     }
 
     conta.saldo -= valor
@@ -131,18 +131,18 @@ const transferir = (req, res) => {
     const { valor, numero_conta_origem, numero_conta_destino, senha } = req.body;
 
     if (!valor || !numero_conta_origem || !numero_conta_destino || !senha) {
-        return res.status(400).json({ "mensagem": "Os números das contas, o valor da transferencia e a senha são obrigatórios!" });
+        return res.status(400).json({ 'mensagem': 'Os números das contas, o valor da transferencia e a senha são obrigatórios!' });
     }
 
     const contaOrigem = verificaConta(numero_conta_origem, res);
     const contaDestino = verificaConta(numero_conta_destino, res);
 
     if (senha !== contaOrigem.usuario.senha) {
-        return res.status(400).json({ mensagem: 'Senha inválida.' });
+        return res.status(400).json({ 'mensagem': 'Senha inválida.' });
     }
 
     if (valor > contaOrigem.saldo || valor <= 0) {
-        return res.status(400).json({ mensagem: 'Valor inválido' });
+        return res.status(400).json({ 'mensagem': 'Valor inválido' });
     }
 
     contaOrigem.saldo -= valor
@@ -163,13 +163,13 @@ const saldo = (req, res) => {
     const numero_conta = Number(req.query.numero_conta);
 
     if (!numero_conta || !senha) {
-        return res.status(400).json({ "mensagem": "O número da conta e senha são obrigatórios!" });
+        return res.status(400).json({ 'mensagem': 'O número da conta e senha são obrigatórios!' });
     }
 
     const conta = verificaConta(numero_conta, res);
 
     if (senha !== conta.usuario.senha) {
-        return res.status(400).json({ mensagem: 'Senha inválida.' });
+        return res.status(400).json({ 'mensagem': 'Senha inválida.' });
     }
 
     return res.json(conta.saldo);
@@ -180,13 +180,13 @@ const extrato = (req, res) => {
     const numero_conta = Number(req.query.numero_conta);
 
     if (!numero_conta || !senha) {
-        return res.status(400).json({ "mensagem": "O número da conta e senha são obrigatórios!" });
+        return res.status(400).json({ 'mensagem': 'O número da conta e senha são obrigatórios!' });
     }
 
     const conta = verificaConta(numero_conta, res);
 
     if (senha !== conta.usuario.senha) {
-        return res.status(400).json({ mensagem: 'Senha inválida.' });
+        return res.status(400).json({ 'mensagem': 'Senha inválida.' });
     }
 
     let extrato = {
@@ -209,7 +209,7 @@ const extrato = (req, res) => {
 
 function verificaConta(numero_conta, res) {
     if (isNaN(numero_conta)) {
-        return res.status(400).json({ mensagem: 'Número de conta inválido.' });
+        return res.status(400).json({ 'mensagem': 'Número de conta inválido.' });
     };
 
     const conta = contas.find((conta) => {
@@ -217,7 +217,7 @@ function verificaConta(numero_conta, res) {
     });
 
     if (!conta) {
-        return res.status(404).json({ mensagem: 'Conta não encontrada.' });
+        return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
     };
 
     return conta;
@@ -226,23 +226,23 @@ function verificaConta(numero_conta, res) {
 
 function verificaDados(nome, cpf, data_nascimento, telefone, email, senha) {
     if (!nome || nome.trim() === '') {
-        erro = { "mensagem": "O nome deve ser informado." };
+        erro = { 'mensagem': 'O nome deve ser informado.' };
     } else if (!cpf || cpf.trim() === '') {
-        erro = { "mensagem": "O CPF deve ser informado." };
+        erro = { 'mensagem': 'O CPF deve ser informado.' };
     } else if (!data_nascimento || data_nascimento.trim() === '') {
-        erro = { "mensagem": "A data de nascimento deve ser informada." };
+        erro = { 'mensagem': 'A data de nascimento deve ser informada.' };
     } else if (!telefone || telefone.trim() === '') {
-        erro = { "mensagem": "O telefone deve ser informado." };
+        erro = { 'mensagem': 'O telefone deve ser informado.' };
     } else if (!email || email.trim() === '') {
-        erro = { "mensagem": "O email deve ser informado." };
+        erro = { 'mensagem': 'O email deve ser informado.' };
     } else if (!senha || senha.trim() === '') {
-        erro = { "mensagem": "O senha deve ser informada." };
+        erro = { 'mensagem': 'O senha deve ser informada.' };
     } else if (contas.find(conta => conta.usuario.nome === nome)) {
-        erro = { "mensagem": "O nome informado já existe cadastrado!" };
+        erro = { 'mensagem': 'O nome informado já existe cadastrado!' };
     } else if (contas.find(conta => conta.usuario.cpf === cpf)) {
-        erro = { "mensagem": "O CPF informado já existe cadastrado!" };
+        erro = { 'mensagem': 'O CPF informado já existe cadastrado!' };
     } else if (contas.find(conta => conta.usuario.email === email)) {
-        erro = { "mensagem": "O email informado já existe cadastrado!" };
+        erro = { 'mensagem': 'O email informado já existe cadastrado!' };
     } else {
         erro = '0';
     }
