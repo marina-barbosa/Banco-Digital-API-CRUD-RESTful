@@ -1,5 +1,5 @@
 let { contas, depositos, saques, transferencias } = require('../bancodedados.js');
-const { verificaDados, verificaConta, verificaCampos } = require('./functions.js');
+const { verificaConta, verificaCampoVazio, verificaDadoUnico, verificaValor, verificaSenha } = require('./functions.js');
 let numeroContas = 2;
 
 const listarContas = (req, res) => {
@@ -9,18 +9,46 @@ const listarContas = (req, res) => {
 const criarConta = (req, res) => {
     const { nome, cpf, data_nascimento, telefone, email, senha } = req.body;
 
-    const erro = verificaDados(nome, cpf, data_nascimento, telefone, email, senha)
+    const erro = verificaDadoUnico(nome, cpf, email)
 
-    if (erro !== '0') {
+    if (erro.length !== 0) {
         return res.status(400).json(erro);
+    } else {
+        numeroContas++;
+        const novaConta = {
+            "numero": numeroContas,
+            "saldo": 0,
+            "usuario": {
+                nome,
+                cpf,
+                data_nascimento,
+                telefone,
+                email,
+                senha
+            }
+        }
+        contas.push(novaConta);
+
+        return res.status(201).send();
     }
+}
 
-    numeroContas++;
+const atualizarUsuario = (req, res) => {
+    const numero_conta = Number(req.params.numero);
+    const { nome, cpf, data_nascimento, telefone, email, senha } = req.body;
+    const campos = { nome, cpf, data_nascimento, telefone, email, senha };
 
-    const novaConta = {
-        "numero": numeroContas,
-        "saldo": 0,
-        "usuario": {
+    const conta = verificaConta(numero_conta);
+    const erro = verificaCampoVazio(campos);
+    const erro2 = verificaDadoUnico(nome, cpf, email);
+
+    if (erro.length !== 0 || erro2.length !== 0) {
+        erro.push(erro2);
+        return res.status(400).json(erro);
+    } else if (!conta) {
+        return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
+    } else {
+        conta.usuario = {
             nome,
             cpf,
             data_nascimento,
@@ -28,65 +56,39 @@ const criarConta = (req, res) => {
             email,
             senha
         }
+        return res.status(201).json();
     }
-
-    contas.push(novaConta);
-
-    return res.status(201).send();
-}
-
-const atualizarUsuario = (req, res) => {
-    const numero_conta = Number(req.params.numero);
-    const { nome, cpf, data_nascimento, telefone, email, senha } = req.body;
-
-    const conta = verificaConta(numero_conta, res);
-
-    const erro = verificaDados(nome, cpf, data_nascimento, telefone, email, senha)
-
-    if (erro !== '0') {
-        return res.status(400).json(erro);
-    }
-
-    conta.usuario = {
-        nome,
-        cpf,
-        data_nascimento,
-        telefone,
-        email,
-        senha
-    }
-
-    return res.status(201).json();
 }
 
 const excluirConta = (req, res) => {
     const numero_conta = Number(req.params.numero);
 
-    const conta = verificaConta(numero_conta, res);
+    const conta = verificaConta(numero_conta);
 
-    if (conta.saldo !== 0) {
+    if (!conta) {
+        return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
+    } else if (conta.saldo == 0) {
         return res.status(403).json({ 'mensagem': 'A conta só pode ser removida se o saldo for zero!' });
+    } else {
+        contas = contas.filter((conta) => {
+            return conta.numero !== numero_conta;
+        });
+
+        return res.status(204).json();
     }
-
-    contas = contas.filter((conta) => {
-        return conta.numero !== numero_conta;
-    });
-
-    return res.status(204).json();
 }
 
 const depositar = (req, res) => {
     const valor = Number(req.body.valor);
-    const numero_conta = req.body.numero_conta;
+    const numero_conta = Number(req.body.numero_conta);
 
-    if (!numero_conta || !valor) {
-        return res.status(400).json({ 'mensagem': 'O número da conta e o valor são obrigatórios!' });
-    }
+    const erro = verificaValor(valor);
+    const conta = verificaConta(numero_conta);
 
-    const conta = verificaConta(numero_conta, res);
-
-    if (valor <= 0 || isNaN(valor)) {
-        return res.status(400).json({ 'mensagem': 'Valor inválido' });
+    if (erro.length !== 0) {
+        return res.status(400).json(erro);
+    } else if (!conta) {
+        return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
     }
 
     conta.saldo += valor
@@ -102,77 +104,82 @@ const depositar = (req, res) => {
 const sacar = (req, res) => {
     const { senha } = req.body;
     const valor = Number(req.body.valor);
-    const numero_conta = req.body.numero_conta;
+    const numero_conta = Number(req.body.numero_conta);
 
-    if (!numero_conta || !valor || !senha) {
-        return res.status(400).json({ 'mensagem': 'O número da conta, o valor do saque e a senha são obrigatórios!' });
+    const conta = verificaConta(numero_conta);
+
+    if (!conta) {
+        return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
     }
 
-    const conta = verificaConta(numero_conta, res);
+    let erro = verificaSenha(senha, conta);
 
-    if (senha !== conta.usuario.senha) {
-        return res.status(400).json({ 'mensagem': 'Senha inválida.' });
+    const erro2 = verificaValor(valor, conta.saldo, 2);
+
+    if (erro.length !== 0 || erro2.length !== 0) {
+        erro.push(erro2);
+        return res.status(400).json(erro);
+    } else {
+        conta.saldo -= valor
+
+        saques.push({
+            "data": new Date(),
+            "numero_conta": numero_conta,
+            valor
+        });
+
+        return res.json();
     }
-
-    if (valor > conta.saldo || valor <= 0 || isNaN(valor)) {
-        return res.status(400).json({ 'mensagem': 'Valor inválido' });
-    }
-
-    conta.saldo -= valor
-
-    saques.push({
-        "data": new Date(),
-        "numero_conta": numero_conta,
-        valor
-    });
-
-    return res.json();
 };
 
 const transferir = (req, res) => {
-    const { numero_conta_origem, numero_conta_destino, senha } = req.body;
+    const { senha } = req.body;
+    const numero_conta_origem = Number(req.body.numero_conta_origem);
+    const numero_conta_destino = Number(req.body.numero_conta_destino);
     const valor = Number(req.body.valor);
 
-    if (!numero_conta_origem || !numero_conta_destino || !senha) {
-        return res.status(400).json({ 'mensagem': 'Os números das contas, o valor da transferencia e a senha são obrigatórios!' });
+    const contaOrigem = verificaConta(numero_conta_origem);
+    const contaDestino = verificaConta(numero_conta_destino);
+
+    if (!contaOrigem || !contaDestino) {
+        return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
     }
 
-    const contaOrigem = verificaConta(numero_conta_origem, res);
-    const contaDestino = verificaConta(numero_conta_destino, res);
+    let erro = verificaSenha(senha, contaOrigem);
+    const erro2 = verificaValor(valor, contaOrigem.saldo, 2);
 
-    if (senha !== contaOrigem.usuario.senha) {
-        return res.status(400).json({ 'mensagem': 'Senha inválida.' });
+    if (erro.length !== 0 || erro2.length !== 0) {
+        erro.push(erro2);
+        return res.status(400).json(erro);
+    } else {
+        contaOrigem.saldo -= valor
+        contaDestino.saldo += valor
+
+        transferencias.push({
+            "data": new Date(),
+            "numero_conta_origem": numero_conta_origem,
+            "numero_conta_destino": numero_conta_destino,
+            "valor": valor
+        });
+
+        return res.json();
     }
-
-    if (valor > contaOrigem.saldo || valor <= 0 || isNaN(valor)) {
-        return res.status(400).json({ 'mensagem': 'Valor inválido' });
-    }
-
-    contaOrigem.saldo -= valor
-    contaDestino.saldo += valor
-
-    transferencias.push({
-        "data": new Date(),
-        "numero_conta_origem": numero_conta_origem,
-        "numero_conta_destino": numero_conta_destino,
-        "valor": valor
-    });
-
-    return res.json();
-};
+}
 
 const saldo = (req, res) => {
     const { senha } = req.query;
     const numero_conta = Number(req.query.numero_conta);
 
-    if (!numero_conta || !senha) {
-        return res.status(400).json({ 'mensagem': 'O número da conta e senha são obrigatórios!' });
+    const conta = verificaConta(numero_conta);
+
+    if (!conta) {
+        return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
     }
 
-    const conta = verificaConta(numero_conta, res);
+    const erro = verificaSenha(senha, conta);
 
-    if (senha !== conta.usuario.senha) {
-        return res.status(400).json({ 'mensagem': 'Senha inválida.' });
+    if (erro.length !== 0) {
+        return res.status(400).json(erro);
     }
 
     return res.json(conta.saldo);
@@ -182,14 +189,16 @@ const extrato = (req, res) => {
     const { senha } = req.query;
     const numero_conta = Number(req.query.numero_conta);
 
-    if (!numero_conta || !senha) {
-        return res.status(400).json({ 'mensagem': 'O número da conta e senha são obrigatórios!' });
+    const conta = verificaConta(numero_conta);
+
+    if (!conta) {
+        return res.status(404).json({ 'mensagem': 'Conta não encontrada.' });
     }
 
-    const conta = verificaConta(numero_conta, res);
+    const erro = verificaSenha(senha, conta);
 
-    if (senha !== conta.usuario.senha) {
-        return res.status(400).json({ 'mensagem': 'Senha inválida.' });
+    if (erro.length !== 0) {
+        return res.status(400).json(erro);
     }
 
     let extrato = {
@@ -209,7 +218,6 @@ const extrato = (req, res) => {
 
     return res.json(extrato);
 };
-
 
 module.exports = {
     listarContas,

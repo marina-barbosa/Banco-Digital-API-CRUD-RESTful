@@ -10,10 +10,6 @@ app.listen(3000, () => {
 });
 
 
-// tentar criar verifica campos
-// refatorar mensagem de erro
-// consertar transferencias
-
 
 
 

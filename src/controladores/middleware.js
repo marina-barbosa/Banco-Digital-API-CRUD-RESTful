@@ -9,4 +9,5 @@ const validaSenha = (req, res, next) => {
     next();
 }
 
+
 module.exports = validaSenha;
