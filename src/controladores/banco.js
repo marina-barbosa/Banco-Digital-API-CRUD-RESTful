@@ -203,16 +203,16 @@ const extrato = (req, res) => {
 
     let extrato = {
         depositos: depositos.filter((item) => {
-            return item.numero_conta === 1
+            return item.numero_conta === numero_conta
         }),
         saques: saques.filter((item) => {
-            return item.numero_conta === 1
+            return item.numero_conta === numero_conta
         }),
         transferenciasEnviadas: transferencias.filter((item) => {
-            return item.numero_conta_origem === 1
+            return item.numero_conta_origem === numero_conta
         }),
         transferenciasRecebidas: transferencias.filter((item) => {
-            return item.numero_conta_destino === 1
+            return item.numero_conta_destino === numero_conta
         })
     }
 
