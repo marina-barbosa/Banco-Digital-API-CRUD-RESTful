@@ -4,7 +4,7 @@
 
 Projeto API Restful de Banco Digital desenvolvida como desafio do Módulo 02 da Cubos Academy. Esta API permite a criação, gerenciamento e realização de operações bancárias em contas bancárias virtuais.
 
-[link gif aqui]
+![GIF](https://github.com/marina-barbosa/desafio-backend-m02-b2bt05/blob/main/gif-crud-banco-digital.gif)
 
 ## A API oferece as seguintes funcionalidades:
 
