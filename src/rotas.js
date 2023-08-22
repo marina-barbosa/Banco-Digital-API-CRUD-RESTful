@@ -1,19 +1,20 @@
 const express = require('express');
-const validaSenha = require('./controladores/middleware.js');
+const { validaSenhaAdm } = require('./controladores/intermediario.js');
+const rotas = express();
+const {
+    depositar,
+    sacar,
+    transferir } = require('./controladores/operacoes.js');
 const {
     listarContas,
     criarConta,
     atualizarUsuario,
     excluirConta,
-    depositar,
-    sacar,
-    transferir,
     saldo,
     extrato
-} = require('./controladores/banco.js');
-const rotas = express();
+} = require('./controladores/usuarios.js');
 
-rotas.get('/contas', validaSenha, listarContas);
+rotas.get('/contas', validaSenhaAdm, listarContas);
 rotas.post('/contas', criarConta);
 rotas.put('/contas/:numero/usuario', atualizarUsuario);
 rotas.delete('/contas/:numero', excluirConta);

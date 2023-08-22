@@ -1,6 +1,6 @@
 const { banco } = require('../bancodedados.js');
 
-const validaSenha = (req, res, next) => {
+const validaSenhaAdm = (req, res, next) => {
     const { senha_banco } = req.query;
 
     if (senha_banco !== banco.senha) {
@@ -10,4 +10,6 @@ const validaSenha = (req, res, next) => {
 }
 
 
-module.exports = validaSenha;
+module.exports = {
+    validaSenhaAdm,
+}

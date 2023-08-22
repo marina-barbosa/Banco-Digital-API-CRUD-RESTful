@@ -17,15 +17,12 @@ function verificaConta(numero_conta) {
     return conta;
 }
 
-function verificaDadoUnico(nome, cpf, email) {
+function verificaDadoUnico(cpf, email, numero_conta) {
     let erro = [];
-    if (contas.find(conta => conta.usuario.nome === nome)) {
-        erro.push({ 'mensagem': 'O nome informado já existe cadastrado!' });
-    }
-    if (contas.find(conta => conta.usuario.cpf === cpf)) {
+    if (contas.some((conta) => { return conta.usuario.cpf === cpf && conta.numero !== numero_conta })) {
         erro.push({ 'mensagem': 'O CPF informado já existe cadastrado!' });
     }
-    if (contas.find(conta => conta.usuario.email === email)) {
+    if (contas.some((conta) => { return conta.usuario.email === email && conta.numero !== numero_conta })) {
         erro.push({ 'mensagem': 'O email informado já existe cadastrado!' });
     }
     return erro;
@@ -52,7 +49,7 @@ function verificaValor(valor, saldo, modo) {
     if (valor <= 0) {
         erro.push({ 'mensagem': 'O valor nao pode ser zero ou negativo.' });
     }
-    if (modo = 2) {
+    if (modo == 2) {
         if (valor > saldo) {
             erro.push({ 'mensagem': 'Saldo insuficiente.' });
         }
