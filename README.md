@@ -43,8 +43,8 @@ Projeto API Restful de Banco Digital desenvolvida como desafio do Módulo 02 da 
 
 ## Para executar:
 
-1. Clone este repositório: `git clone ........`
-2. Navegue até o diretório do projeto: `cd .........`
+1. Clone este repositório: `git clone git@github.com:marina-barbosa/Banco-Digital-API-CRUD-RESTful.git`
+2. Navegue até o diretório do projeto: `cd Banco-Digital-API-CRUD-RESTful/src/`
 3. Instale as dependências: `npm install`
 4. Inicie o servidor.
 5. A API estará disponível em: `http://localhost:3000` por padrão.
